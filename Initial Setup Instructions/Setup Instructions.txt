@@ -1,0 +1,6 @@
+﻿I would highly suggest installing SQL Server Express, and separately SQL Server Management Studio to manage it.
+Create database named "LPR."  If you choose to use an existing database or name it something different, modify the first line of each SQL File from "USE [LPR]" to the name of your database.
+Run files in order (01-14) in SQL Server Management Studio.  The first batch will create the tables, the second batch will create the stored procedures.
+
+Compile, install, run LPR_Downloader app.
+Fill out Configuration page.

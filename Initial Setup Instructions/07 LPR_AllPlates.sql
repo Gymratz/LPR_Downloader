@@ -1,0 +1,110 @@
+USE [LPR]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_LPR_AllPlates]    Script Date: 8/9/2019 9:11:22 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_LPR_AllPlates]
+	-- Add the parameters for the stored procedure here
+	@StartDate datetime,
+	@EndDate datetime,
+	@Plate nvarchar(50),
+	@HideNeighbors bit = 0,
+	@CurrentOffset varchar(10) = '-07:00',
+	@IdentifyDupes int = 0
+
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	Select
+		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) as [Local Time],
+		PH.best_plate as [Plate],
+		KP.Description,
+		PH.region as [Region],
+		PH.vehicle_color as [Color],
+		PH.vehicle_make as [Make],
+		PH.vehicle_make_model as [Model],
+		PH.vehicle_body_type as [Body],
+		PH.best_uuid as [Picture],
+		(
+			Select
+				Count(PHinner.best_plate)
+			From LPR_PlateHits as PHinner
+			Left Join LPR_PlateHits_ToHide as PHTHinner on PHTHinner.pk = PHinner.pk
+			Where
+				PHinner.best_plate = PH.best_plate AND
+				Cast(switchoffset(Cast(PHinner.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) > dateadd(hour, -24, GetDate()) AND
+				PHTHinner.reason is NULL
+		) as [Hits Day],
+		(
+			Select
+				Count(PHinner.best_plate)
+			From LPR_PlateHits as PHinner
+			Left Join LPR_PlateHits_ToHide as PHTHinner on PHTHinner.pk = PHinner.pk
+			Where
+				PHinner.best_plate = PH.best_plate AND
+				Cast(switchoffset(Cast(PHinner.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) > dateadd(day, -7, GetDate()) AND
+				PHTHinner.reason is NULL
+		) as [Hits Week],
+		(
+			Select
+				Count(Distinct CONVERT(date, Cast(switchoffset(Cast(PHinner.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime)))
+			From LPR_PlateHits as PHinner
+			Left Join LPR_PlateHits_ToHide as PHTHinner on PHTHinner.pk = PHinner.pk
+			Where
+				PHinner.best_plate = PH.best_plate AND
+				PHTHinner.reason is NULL		
+		) as [Distinct Days],
+		KP.Status,
+		PH.plate_x1, 
+		PH.plate_x2, 
+		PH.plate_x3, 
+		PH.plate_x4,
+		PH.plate_y1,
+		PH.plate_y2,
+		PH.plate_y3,
+		PH.plate_y4,
+		PH.vehicle_region_height,
+		PH.vehicle_region_width,
+		PH.vehicle_region_x,
+		PH.vehicle_region_y,
+		PH.pk,
+		KP.Alert_Address
+	From LPR_PlateHits as PH
+	Left Join LPR_KnownPlates as KP on KP.Plate = PH.best_plate
+	Left Join LPR_PlateHits_ToHide as PHTH on PHTH.pk = PH.pk
+	Where
+		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) >= @StartDate AND
+		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) <= @EndDate AND
+		PH.best_plate like @Plate AND
+		IsNull(KP.Status, '') <> Case When @HideNeighbors = 0 then 'NeverHide' When @HideNeighbors = 1 then 'Neighbor' end AND
+		PHTH.reason is NULL AND
+		(
+			Select
+				Count(*)
+			From LPR_PlateHits as PHDup
+			Left Join LPR_PlateHits_ToHide as PHTHDup on PHTHDup.pk = PHDup.pk
+			Where
+				PHDup.best_plate = PH.best_plate AND
+				datediff(second, PH.epoch_time_end, PHDup.epoch_time_end) between -30 and 30 AND
+				PHDup.pk <> PH.pk AND
+				PHTHDup.reason is NULL
+		) >= @IdentifyDupes
+	Order By
+		PH.epoch_time_end Desc
+END
+GO
+

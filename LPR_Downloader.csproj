@@ -123,5 +123,22 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Initial Setup Instructions\01 LPR_AutoHidePlates.sql" />
+    <Content Include="Initial Setup Instructions\02 LPR_ImportHistory.sql" />
+    <Content Include="Initial Setup Instructions\03 LPR_KnownPlates.sql" />
+    <Content Include="Initial Setup Instructions\04 LPR_KnownPlates.sql" />
+    <Content Include="Initial Setup Instructions\05 LPR_PlateHits.sql" />
+    <Content Include="Initial Setup Instructions\06 LPR_PlateHits_ToHide.sql" />
+    <Content Include="Initial Setup Instructions\07 LPR_AllPlates.sql" />
+    <Content Include="Initial Setup Instructions\08 LPR_FixPlates.sql" />
+    <Content Include="Initial Setup Instructions\09 LPR_GetDBStats.sql" />
+    <Content Include="Initial Setup Instructions\10 LPR_PlateAlerts.sql" />
+    <Content Include="Initial Setup Instructions\11 LPR_PlateChart.sql" />
+    <Content Include="Initial Setup Instructions\12 LPR_PlatePie.sql" />
+    <Content Include="Initial Setup Instructions\13 LPR_PlateSummary.sql" />
+    <Content Include="Initial Setup Instructions\14 LPR_SpecificPlate.sql" />
+    <Content Include="Initial Setup Instructions\Setup Instructions.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
