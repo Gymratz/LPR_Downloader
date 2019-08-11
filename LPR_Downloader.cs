@@ -212,12 +212,9 @@ namespace LPR_Downloader
                 TotalCSVCount = dt_CSVData.Rows.Count;
 
                 // Load entire LPR Database into Data Table
-                string str_SqlCon = Constants.str_SqlCon;
-                SqlConnection db_connection;
                 DataTable dt_SQLData = new DataTable();
-                db_connection = new SqlConnection(str_SqlCon);
-                SqlDataAdapter adapter = new SqlDataAdapter("Select * from LPR_PlateHits", db_connection);
-                adapter.Fill(dt_SQLData);
+                dataAdapter = new SqlDataAdapter("Select * from LPR_PlateHits", Constants.str_SqlCon);
+                dataAdapter.Fill(dt_SQLData);
 
                 // Loop through CSV File and save the row id for any rows already in the DB (based on PK).
                 List<DataRow> rows_to_remove = new List<DataRow>();
@@ -334,14 +331,14 @@ namespace LPR_Downloader
                 String searchPlate = row1["best_plate"].ToString();
                 String imagePlate = row1["best_uuid"].ToString();
                 String alertAddress = "";
-                using (SqlConnection db_connection = new SqlConnection(Constants.str_SqlCon))
+                using (sql_Connection = new SqlConnection(Constants.str_SqlCon))
                 {
-                    using (SqlCommand db_command = new SqlCommand("Exec sp_LPR_PlateAlerts @Plate", db_connection))
+                    using (sql_Command = new SqlCommand("Exec sp_LPR_PlateAlerts @Plate", sql_Connection))
                     {
-                        db_command.Parameters.AddWithValue("@Plate", searchPlate);
-                        db_connection.Open();
+                        sql_Command.Parameters.AddWithValue("@Plate", searchPlate);
+                        sql_Connection.Open();
 
-                        using (SqlDataReader db_reader = db_command.ExecuteReader())
+                        using (SqlDataReader db_reader = sql_Command.ExecuteReader())
                         {
                             while (db_reader.Read())
                             {
@@ -355,7 +352,7 @@ namespace LPR_Downloader
                 {
                     if (Constants.pushToken != "" && Constants.pushUser != "")
                     {
-                        Alert_Push("Watched Plate", "You may be interested in this plate that just went by the house...", "blah");
+                        Alert_Push("Watched Plate", "You may be interested in this plate that just went by the house...");
                     }
 
                     if (Constants.emailSignIn != "")
@@ -402,7 +399,7 @@ namespace LPR_Downloader
             }
         }
 
-        public void Alert_Push (string thisTitle, string thisMessage, string thisDevice)
+        public void Alert_Push (string thisTitle, string thisMessage, string thisDevice = "DefaultDevice")
         {
             using (System.Net.WebClient client = new System.Net.WebClient())
             {
