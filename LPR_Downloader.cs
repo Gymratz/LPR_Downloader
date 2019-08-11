@@ -355,7 +355,7 @@ namespace LPR_Downloader
                 {
                     if (Constants.pushToken != "" && Constants.pushUser != "")
                     {
-                        Alert_Push("Watched Plate", "You may be interested in this plate that just went by the house...");
+                        Alert_Push("Watched Plate", "You may be interested in this plate that just went by the house...", "blah");
                     }
 
                     if (Constants.emailSignIn != "")
