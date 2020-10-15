@@ -36,6 +36,12 @@ namespace LPR_Downloader
 
             System.Threading.Tasks.Task blah = LoginALPR();
             HistoryGrid_Configure();
+
+            //Added 2020.10.14 - Start downloading on form load if setting is configured
+            if (Constants.StartOnLoad == "True")
+            {
+                StartTimer();
+            }
         }
 
         private void Settings_Populate()
@@ -65,7 +71,18 @@ namespace LPR_Downloader
             {
                 chk_emailUseSSL.Checked = false;
             }
- 
+
+            //Added 2020.10.14 - New Setting
+            Constants.StartOnLoad = ConfigurationManager.AppSettings["StartOnLoad"];
+            if (Constants.StartOnLoad == "True")
+            {
+                chk_StartOnLoad.Checked = true;
+            }
+            else
+            {
+                chk_StartOnLoad.Checked = false;
+            }
+
             Constants.alprUser = ConfigurationManager.AppSettings["alprUser"];
             txt_alprUser.Text = Constants.alprUser;
 
@@ -86,6 +103,9 @@ namespace LPR_Downloader
 
             Constants.pushUser = ConfigurationManager.AppSettings["pushUser"];
             txt_pushUser.Text = Constants.pushUser;
+
+            Constants.TimerMinutes = ConfigurationManager.AppSettings["TimerMinutes"];
+            txt_TimerMinutes.Text = Constants.TimerMinutes;
         }
 
         private void Settings_Save()
@@ -105,6 +125,7 @@ namespace LPR_Downloader
             config.AppSettings.Settings["csvArchiveLocation"].Value = txt_csvArchiveLocation.Text;
             config.AppSettings.Settings["pushToken"].Value = txt_pushToken.Text;
             config.AppSettings.Settings["pushUser"].Value = txt_pushUser.Text;
+            config.AppSettings.Settings["StartOnLoad"].Value = chk_StartOnLoad.Checked.ToString();
 
             config.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection("appSettings");
@@ -114,6 +135,18 @@ namespace LPR_Downloader
 
         #region Timer Related
         private void Btn_TimerStart_Click(object sender, EventArgs e)
+        {
+            //Added 2020.10.14 - Save the Timer Value
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            config.AppSettings.Settings["TimerMinutes"].Value = txt_TimerMinutes.Text;
+            config.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection("appSettings");
+
+            //Added 2020.10.14 - Moved to Function so I can call it when starting the application
+            StartTimer();
+        }
+
+        private void StartTimer()
         {
             int minutes;
             if (int.TryParse(txt_TimerMinutes.Text, out minutes))
@@ -445,14 +478,17 @@ namespace LPR_Downloader
                 wb_OpenALPR.Document.GetElementById("username").SetAttribute("value", Constants.alprUser);
                 wb_OpenALPR.Document.GetElementById("password").SetAttribute("value", Constants.alprPassword);
 
-                HtmlElementCollection elc = wb_OpenALPR.Document.GetElementsByTagName("input");
-                foreach (HtmlElement el in elc)
-                {
-                    if (el.GetAttribute("type").Equals("submit"))
-                    {
-                        el.InvokeMember("Click");
-                    }
-                }
+                //Updated 2020.10.14 to handle new login method.
+                wb_OpenALPR.Document.GetElementById("login-btn").InvokeMember("click");
+
+                //HtmlElementCollection elc = wb_OpenALPR.Document.GetElementsByTagName("input");
+                //foreach (HtmlElement el in elc)
+                //{
+                //    if (el.GetAttribute("id").Equals("login-btn"))
+                //    {
+                //        el.InvokeMember("Click");
+                //    }
+               // }
                 await Wait_WBLoad(10);//wait for page to login, timeout 10 seconds.
             }
 

@@ -18,5 +18,7 @@ namespace LPR_Downloader
         public static string csvArchiveLocation;
         public static string pushToken;
         public static string pushUser;
+        public static string StartOnLoad;
+        public static string TimerMinutes;
     }
 }

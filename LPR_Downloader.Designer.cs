@@ -62,7 +62,6 @@
             this.txt_emailDefaultTo = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.btn_emailTestSend = new System.Windows.Forms.Button();
-            this.chk_emailUseSSL = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.txt_emailPassword = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -76,6 +75,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.txt_SqlCon = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.chk_emailUseSSL = new System.Windows.Forms.CheckBox();
+            this.chk_StartOnLoad = new System.Windows.Forms.CheckBox();
+            this.label16 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ImportHistory)).BeginInit();
             this.tc_LPR_Downloader.SuspendLayout();
@@ -177,7 +179,7 @@
             this.wb_OpenALPR.MinimumSize = new System.Drawing.Size(20, 20);
             this.wb_OpenALPR.Name = "wb_OpenALPR";
             this.wb_OpenALPR.ScriptErrorsSuppressed = true;
-            this.wb_OpenALPR.Size = new System.Drawing.Size(560, 176);
+            this.wb_OpenALPR.Size = new System.Drawing.Size(576, 176);
             this.wb_OpenALPR.TabIndex = 18;
             // 
             // timer_Download
@@ -197,7 +199,7 @@
             this.dgv_ImportHistory.Name = "dgv_ImportHistory";
             this.dgv_ImportHistory.ReadOnly = true;
             this.dgv_ImportHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgv_ImportHistory.Size = new System.Drawing.Size(398, 234);
+            this.dgv_ImportHistory.Size = new System.Drawing.Size(414, 234);
             this.dgv_ImportHistory.TabIndex = 26;
             // 
             // tc_LPR_Downloader
@@ -211,7 +213,7 @@
             this.tc_LPR_Downloader.Location = new System.Drawing.Point(12, 12);
             this.tc_LPR_Downloader.Name = "tc_LPR_Downloader";
             this.tc_LPR_Downloader.SelectedIndex = 0;
-            this.tc_LPR_Downloader.Size = new System.Drawing.Size(580, 454);
+            this.tc_LPR_Downloader.Size = new System.Drawing.Size(596, 454);
             this.tc_LPR_Downloader.TabIndex = 27;
             // 
             // tp_Main_Page
@@ -222,13 +224,15 @@
             this.tp_Main_Page.Location = new System.Drawing.Point(4, 4);
             this.tp_Main_Page.Name = "tp_Main_Page";
             this.tp_Main_Page.Padding = new System.Windows.Forms.Padding(3);
-            this.tp_Main_Page.Size = new System.Drawing.Size(572, 428);
+            this.tp_Main_Page.Size = new System.Drawing.Size(588, 428);
             this.tp_Main_Page.TabIndex = 0;
             this.tp_Main_Page.Text = "Main";
             this.tp_Main_Page.UseVisualStyleBackColor = true;
             // 
             // tp_Settings
             // 
+            this.tp_Settings.Controls.Add(this.label16);
+            this.tp_Settings.Controls.Add(this.chk_StartOnLoad);
             this.tp_Settings.Controls.Add(this.btn_SettingsSave);
             this.tp_Settings.Controls.Add(this.groupBox5);
             this.tp_Settings.Controls.Add(this.groupBox4);
@@ -241,16 +245,16 @@
             this.tp_Settings.Location = new System.Drawing.Point(4, 4);
             this.tp_Settings.Name = "tp_Settings";
             this.tp_Settings.Padding = new System.Windows.Forms.Padding(3);
-            this.tp_Settings.Size = new System.Drawing.Size(590, 428);
+            this.tp_Settings.Size = new System.Drawing.Size(588, 428);
             this.tp_Settings.TabIndex = 1;
             this.tp_Settings.Text = "Settings";
             this.tp_Settings.UseVisualStyleBackColor = true;
             // 
             // btn_SettingsSave
             // 
-            this.btn_SettingsSave.Location = new System.Drawing.Point(10, 357);
+            this.btn_SettingsSave.Location = new System.Drawing.Point(10, 387);
             this.btn_SettingsSave.Name = "btn_SettingsSave";
-            this.btn_SettingsSave.Size = new System.Drawing.Size(571, 60);
+            this.btn_SettingsSave.Size = new System.Drawing.Size(571, 30);
             this.btn_SettingsSave.TabIndex = 10;
             this.btn_SettingsSave.Text = "Save / Update Settings";
             this.btn_SettingsSave.UseVisualStyleBackColor = true;
@@ -431,15 +435,6 @@
             this.btn_emailTestSend.UseVisualStyleBackColor = true;
             this.btn_emailTestSend.Click += new System.EventHandler(this.Btn_emailTestSend_Click);
             // 
-            // chk_emailUseSSL
-            // 
-            this.chk_emailUseSSL.AutoSize = true;
-            this.chk_emailUseSSL.Location = new System.Drawing.Point(219, 40);
-            this.chk_emailUseSSL.Name = "chk_emailUseSSL";
-            this.chk_emailUseSSL.Size = new System.Drawing.Size(15, 14);
-            this.chk_emailUseSSL.TabIndex = 9;
-            this.chk_emailUseSSL.UseVisualStyleBackColor = true;
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -547,11 +542,38 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "SQL Connection Information";
             // 
+            // chk_emailUseSSL
+            // 
+            this.chk_emailUseSSL.AutoSize = true;
+            this.chk_emailUseSSL.Location = new System.Drawing.Point(219, 40);
+            this.chk_emailUseSSL.Name = "chk_emailUseSSL";
+            this.chk_emailUseSSL.Size = new System.Drawing.Size(15, 14);
+            this.chk_emailUseSSL.TabIndex = 9;
+            this.chk_emailUseSSL.UseVisualStyleBackColor = true;
+            // 
+            // chk_StartOnLoad
+            // 
+            this.chk_StartOnLoad.AutoSize = true;
+            this.chk_StartOnLoad.Location = new System.Drawing.Point(10, 357);
+            this.chk_StartOnLoad.Name = "chk_StartOnLoad";
+            this.chk_StartOnLoad.Size = new System.Drawing.Size(15, 14);
+            this.chk_StartOnLoad.TabIndex = 11;
+            this.chk_StartOnLoad.UseVisualStyleBackColor = true;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(28, 358);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(122, 13);
+            this.label16.TabIndex = 13;
+            this.label16.Text = "Start Download on Load";
+            // 
             // frm_LPR_Downloader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(604, 478);
+            this.ClientSize = new System.Drawing.Size(620, 478);
             this.Controls.Add(this.tc_LPR_Downloader);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -610,7 +632,6 @@
         private System.Windows.Forms.TextBox txt_emailDefaultTo;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button btn_emailTestSend;
-        private System.Windows.Forms.CheckBox chk_emailUseSSL;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox txt_csvArchiveLocation;
@@ -627,6 +648,9 @@
         private System.Windows.Forms.TextBox txt_pushToken;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Button btn_SettingsSave;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.CheckBox chk_StartOnLoad;
+        private System.Windows.Forms.CheckBox chk_emailUseSSL;
     }
 }
 
