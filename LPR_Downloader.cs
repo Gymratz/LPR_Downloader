@@ -427,7 +427,7 @@ namespace LPR_Downloader
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = new NetworkCredential(Constants.emailSignIn, Constants.emailPassword);
-                smtp.Host = "smtp.gmail.com";
+                smtp.Host = Constants.emailServer;
                 smtp.Send(mail);
             }
         }
