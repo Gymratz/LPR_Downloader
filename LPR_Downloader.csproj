@@ -139,6 +139,7 @@
     <Content Include="Initial Setup Instructions\12 LPR_PlatePie.sql" />
     <Content Include="Initial Setup Instructions\13 LPR_PlateSummary.sql" />
     <Content Include="Initial Setup Instructions\14 LPR_SpecificPlate.sql" />
+    <Content Include="Initial Setup Instructions\LPR_Logo.jpg" />
     <Content Include="Initial Setup Instructions\Setup Instructions.txt" />
     <Content Include="Update Only Instructions\2020.10.18 LPR_PlateAlerts.sql" />
     <Content Include="Update Only Instructions\Read Me.txt" />
