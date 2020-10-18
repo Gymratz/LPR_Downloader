@@ -23,7 +23,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>6</ApplicationRevision>
+    <ApplicationRevision>7</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -138,6 +138,7 @@
     <Content Include="Initial Setup Instructions\12 LPR_PlatePie.sql" />
     <Content Include="Initial Setup Instructions\13 LPR_PlateSummary.sql" />
     <Content Include="Initial Setup Instructions\14 LPR_SpecificPlate.sql" />
+    <Content Include="Initial Setup Instructions\15 %28Update%29 LPR_PlateAlerts.sql" />
     <Content Include="Initial Setup Instructions\Setup Instructions.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

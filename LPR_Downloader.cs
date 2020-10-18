@@ -364,6 +364,12 @@ namespace LPR_Downloader
                 String searchPlate = row1["best_plate"].ToString();
                 String imagePlate = row1["best_uuid"].ToString();
                 String alertAddress = "";
+                String Description = "";
+                String Status = "";
+                String Year = "";
+                String Make = "";
+                String Model = "";
+
                 using (sql_Connection = new SqlConnection(Constants.str_SqlCon))
                 {
                     using (sql_Command = new SqlCommand("Exec sp_LPR_PlateAlerts @Plate", sql_Connection))
@@ -376,6 +382,11 @@ namespace LPR_Downloader
                             while (db_reader.Read())
                             {
                                 alertAddress = db_reader[0].ToString();
+                                Description = db_reader[1].ToString();
+                                Status = db_reader[2].ToString();
+                                Year = db_reader[3].ToString();
+                                Make = db_reader[4].ToString();
+                                Model = db_reader[5].ToString();
                             }
                         }
                     }
@@ -393,16 +404,16 @@ namespace LPR_Downloader
                         Image img_Full;
                         //Gets Image and saves the full image
                         WebClient wc = new WebClient();
-                        byte[] bytes = wc.DownloadData("http://127.0.0.1:8355/img/" + imagePlate + ".jpg");
+                        byte[] bytes = wc.DownloadData(Constants.str_WebServer +"/img/" + imagePlate + ".jpg");
                         System.IO.MemoryStream ms = new System.IO.MemoryStream(bytes);
                         img_Full = Image.FromStream(ms);
-                        Alert_Email(img_Full, alertAddress, searchPlate);
+                        Alert_Email(img_Full, alertAddress, searchPlate, Description, Status, Year, Make, Model);
                     }
                 }
             }
         }
 
-        private void Alert_Email(Image img_ToEmail, string str_EmailToAddress, string str_Plate)
+        private void Alert_Email(Image img_ToEmail, string str_EmailToAddress, string str_Plate, string D, String S, String Y, String Ma, String Mo)
         {
             MailMessage mail = new MailMessage();
             mail.From = new System.Net.Mail.MailAddress(Constants.emailSignIn);
@@ -410,15 +421,29 @@ namespace LPR_Downloader
             mail.IsBodyHtml = true;
             mail.Subject = "License Plate Alert: " + str_Plate;
             string st = "A flagged license plate has been spotted!";
+            st += "<br />Status: " + S;
+            st += "<br />Description: " + D;
+            st += "<br />Year: " + Y;
+            st += "<br />Make: " + Ma;
+            st += "<br />Model: " + Mo;
+            st += "<br /><br /><img src = \"$LPIMAGE$\" />";
+
+            //Update all the Image Placeholders to code that will allow the images to show up inline in the email
+            string contentIDLP = Guid.NewGuid().ToString().Replace("-", "");
+            st = st.Replace("$LPIMAGE$", "cid:" + contentIDLP);
+
+            //Add to Alternate View
+            AlternateView htmlView = AlternateView.CreateAlternateViewFromString(st, null, "text/html");
+
+            //Add the actual images
+            var imageStreamLP = GetImageStream(img_ToEmail);
+            LinkedResource imagelinkLP = new LinkedResource(imageStreamLP, "image/jpeg");
+            imagelinkLP.ContentId = contentIDLP;
+            imagelinkLP.TransferEncoding = System.Net.Mime.TransferEncoding.Base64;
+            htmlView.LinkedResources.Add(imagelinkLP);
+
+            mail.AlternateViews.Add(htmlView);
             mail.Body = st;
-
-            var imageStream = GetImageStream(img_ToEmail);
-
-            var imageResource = new LinkedResource(imageStream, "image/png") { ContentId = "added-image-id" };
-            var alternateView = AlternateView.CreateAlternateViewFromString(mail.Body, mail.BodyEncoding, System.Net.Mime.MediaTypeNames.Text.Html);
-
-            alternateView.LinkedResources.Add(imageResource);
-            mail.AlternateViews.Add(alternateView);
 
             using (SmtpClient smtp = new SmtpClient()) // Information for Gmail, change if you use another provider.
             {
