@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_SpecificPlate]    Script Date: 8/9/2019 9:12:54 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_SpecificPlate]    Script Date: 10/18/2020 1:28:38 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -16,7 +16,8 @@ GO
 CREATE PROCEDURE [dbo].[sp_LPR_SpecificPlate]
 	-- Add the parameters for the stored procedure here
 	@Plate nvarchar(50),
-	@CurrentOffset varchar(10) = '-07:00'
+	@CurrentOffset varchar(10) = '-07:00',
+	@TopPH int = 50
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -24,7 +25,7 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	Select
+	Select Top (@TopPH)
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) as [Local Time],
 		PH.region as [Region],
 		PH.vehicle_color as [Color],
@@ -40,4 +41,5 @@ BEGIN
 		PH.epoch_time_end Desc
 END
 GO
+
 

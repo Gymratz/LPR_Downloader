@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_PlateAlerts]    Script Date: 8/9/2019 9:11:57 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_PlateAlerts]    Script Date: 10/18/2020 1:27:27 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -24,10 +24,17 @@ BEGIN
 
     -- Insert statements for procedure here
 	Select
-		KP.Alert_Address
+		KP.Alert_Address,
+		KP.Description,
+		KP.Status,
+		AC.year,
+		AC.make,
+		AC.model
 	From LPR_KnownPlates as KP
+	Left Join LPR_AutoCheck as AC on AC.Plate = KP.Plate
 	Where
 		KP.Plate = @Plate
 END
 GO
+
 

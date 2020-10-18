@@ -125,9 +125,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Initial Setup Instructions\01 LPR_AutoHidePlates.sql" />
+    <Content Include="Initial Setup Instructions\01a LPR_AutoCheck.sql" />
     <Content Include="Initial Setup Instructions\02 LPR_ImportHistory.sql" />
     <Content Include="Initial Setup Instructions\03 LPR_KnownPlates.sql" />
-    <Content Include="Initial Setup Instructions\04 LPR_KnownPlates.sql" />
+    <Content Include="Initial Setup Instructions\04 LPR_PlateCorrections.sql" />
     <Content Include="Initial Setup Instructions\05 LPR_PlateHits.sql" />
     <Content Include="Initial Setup Instructions\06 LPR_PlateHits_ToHide.sql" />
     <Content Include="Initial Setup Instructions\07 LPR_AllPlates.sql" />
@@ -138,8 +139,9 @@
     <Content Include="Initial Setup Instructions\12 LPR_PlatePie.sql" />
     <Content Include="Initial Setup Instructions\13 LPR_PlateSummary.sql" />
     <Content Include="Initial Setup Instructions\14 LPR_SpecificPlate.sql" />
-    <Content Include="Initial Setup Instructions\15 %28Update%29 LPR_PlateAlerts.sql" />
     <Content Include="Initial Setup Instructions\Setup Instructions.txt" />
+    <Content Include="Update Only Instructions\2020.10.18 LPR_PlateAlerts.sql" />
+    <Content Include="Update Only Instructions\Read Me.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  Table [dbo].[LPR_PlateHits]    Script Date: 8/9/2019 9:08:59 PM ******/
+/****** Object:  Table [dbo].[LPR_PlateHits]    Script Date: 10/18/2020 1:25:29 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -18,7 +18,7 @@ CREATE TABLE [dbo].[LPR_PlateHits](
 	[best_uuid] [nvarchar](100) NOT NULL,
 	[camera] [nvarchar](50) NOT NULL,
 	[camera_id] [smallint] NOT NULL,
-	[company] [smallint] NOT NULL,
+	[company] [int] NOT NULL,
 	[crop_location] [tinyint] NOT NULL,
 	[direction_of_travel_degrees] [smallint] NOT NULL,
 	[direction_of_travel_id] [smallint] NOT NULL,
@@ -43,13 +43,13 @@ CREATE TABLE [dbo].[LPR_PlateHits](
 	[site] [nvarchar](50) NOT NULL,
 	[site_id] [smallint] NOT NULL,
 	[vehicle_body_type] [nvarchar](50) NOT NULL,
-	[vehicle_body_type_confidence] [float] NOT NULL,
+	[vehicle_body_type_confidence] [nvarchar](50) NOT NULL,
 	[vehicle_color] [nvarchar](50) NOT NULL,
-	[vehicle_color_confidence] [float] NOT NULL,
+	[vehicle_color_confidence] [nvarchar](50) NOT NULL,
 	[vehicle_make] [nvarchar](50) NOT NULL,
-	[vehicle_make_confidence] [float] NOT NULL,
+	[vehicle_make_confidence] [nvarchar](50) NOT NULL,
 	[vehicle_make_model] [nvarchar](50) NOT NULL,
-	[vehicle_make_model_confidence] [float] NOT NULL,
+	[vehicle_make_model_confidence] [nvarchar](50) NOT NULL,
 	[vehicle_region_height] [smallint] NOT NULL,
 	[vehicle_region_width] [smallint] NOT NULL,
 	[vehicle_region_x] [smallint] NOT NULL,
@@ -60,4 +60,5 @@ CREATE TABLE [dbo].[LPR_PlateHits](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
 

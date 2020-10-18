@@ -4,3 +4,5 @@ Run files in order (01-14) in SQL Server Management Studio.  The first batch wil
 
 Compile, install, run LPR_Downloader app.
 Fill out Configuration page.
+
+Place LPR_Logo.jpg in c:\temp (or other, just update in configuration when you get there)

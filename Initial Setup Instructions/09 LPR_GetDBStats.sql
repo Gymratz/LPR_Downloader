@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_GetDBStats]    Script Date: 8/9/2019 9:11:47 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_GetDBStats]    Script Date: 10/18/2020 1:27:09 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -21,7 +21,10 @@ CREATE PROCEDURE [dbo].[sp_LPR_GetDBStats]
 	@Plate nvarchar(50),
 	@HideNeighbors bit = 0,
 	@CurrentOffset varchar(10) = '-07:00',
-	@IdentifyDupes int = 0
+	@IdentifyDupes int = 0,
+	@TopPH int = 999,
+	@Status nvarchar(100) = '%',
+	@Camera nvarchar(50) = '%'
 
 AS
 BEGIN
@@ -52,6 +55,7 @@ BEGIN
 		PH.best_plate like @Plate AND
 		IsNull(KP.Status, '') <> Case When @HideNeighbors = 0 then 'NeverHide' When @HideNeighbors = 1 then 'Neighbor' end AND
 		PHTH.reason is NULL AND
+		(@IdentifyDupes = 0 OR
 		(
 			Select
 				Count(*)
@@ -62,7 +66,10 @@ BEGIN
 				datediff(second, PH.epoch_time_end, PHDup.epoch_time_end) between -30 and 30 AND
 				PHDup.pk <> PH.pk AND
 				PHTHDup.reason is NULL
-		) >= @IdentifyDupes
+		) >= @IdentifyDupes) AND
+		(@Status = '%' OR IsNull(KP.Status, '') like @Status) AND
+		(@Camera = '%' OR IsNull(PH.camera, '') like @Camera)
 END
 GO
+
 

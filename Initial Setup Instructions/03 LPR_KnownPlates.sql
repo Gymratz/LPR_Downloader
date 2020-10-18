@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  Table [dbo].[LPR_KnownPlates]    Script Date: 8/9/2019 9:08:23 PM ******/
+/****** Object:  Table [dbo].[LPR_KnownPlates]    Script Date: 10/18/2020 1:23:19 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -19,4 +19,5 @@ CREATE TABLE [dbo].[LPR_KnownPlates](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
 

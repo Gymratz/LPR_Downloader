@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_PlateSummary]    Script Date: 8/9/2019 9:12:34 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_PlateSummary]    Script Date: 10/18/2020 1:28:25 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -47,4 +47,5 @@ BEGIN
 		NumberHits Desc
 END
 GO
+
 

@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_FixPlates]    Script Date: 8/9/2019 9:11:32 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_FixPlates]    Script Date: 10/18/2020 1:26:55 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -51,4 +51,5 @@ BEGIN
 		)
 END
 GO
+
 

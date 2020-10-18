@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_PlatePie]    Script Date: 8/9/2019 9:12:24 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_PlatePie]    Script Date: 10/18/2020 1:28:10 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -54,4 +54,5 @@ BEGIN
 		T1.Status
 END
 GO
+
 

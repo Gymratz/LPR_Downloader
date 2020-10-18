@@ -1,0 +1,2 @@
+Run any SQL File dated after the last time you updated/installed.
+If you updated on 2020.10.16 and already ran files with earlier names (e.g. 2020.10.15) you only need to run the later files (e.g. 2020.10.17).

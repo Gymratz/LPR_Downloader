@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_AllPlates]    Script Date: 8/9/2019 9:11:22 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_AllPlates]    Script Date: 10/18/2020 1:26:36 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -20,7 +20,10 @@ CREATE PROCEDURE [dbo].[sp_LPR_AllPlates]
 	@Plate nvarchar(50),
 	@HideNeighbors bit = 0,
 	@CurrentOffset varchar(10) = '-07:00',
-	@IdentifyDupes int = 0
+	@IdentifyDupes int = 0,
+	@TopPH int = 999,
+	@Status nvarchar(100) = '%',
+	@Camera nvarchar(50) = '%'
 
 AS
 BEGIN
@@ -29,7 +32,7 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	Select
+	Select Top (@TopPH)
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) as [Local Time],
 		PH.best_plate as [Plate],
 		KP.Description,
@@ -82,16 +85,22 @@ BEGIN
 		PH.vehicle_region_x,
 		PH.vehicle_region_y,
 		PH.pk,
-		KP.Alert_Address
+		KP.Alert_Address,
+		LPRAC.vin as [VIN],
+		LPRAC.year as [Yr],
+		LPRAC.make as [Car Make],
+		LPRAC.model as [Car Model]
 	From LPR_PlateHits as PH
 	Left Join LPR_KnownPlates as KP on KP.Plate = PH.best_plate
 	Left Join LPR_PlateHits_ToHide as PHTH on PHTH.pk = PH.pk
+	Left Join LPR_AutoCheck as LPRAC on LPRAC.Plate = PH.best_plate
 	Where
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) >= @StartDate AND
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) <= @EndDate AND
 		PH.best_plate like @Plate AND
 		IsNull(KP.Status, '') <> Case When @HideNeighbors = 0 then 'NeverHide' When @HideNeighbors = 1 then 'Neighbor' end AND
 		PHTH.reason is NULL AND
+		(@IdentifyDupes = 0 OR
 		(
 			Select
 				Count(*)
@@ -102,9 +111,12 @@ BEGIN
 				datediff(second, PH.epoch_time_end, PHDup.epoch_time_end) between -30 and 30 AND
 				PHDup.pk <> PH.pk AND
 				PHTHDup.reason is NULL
-		) >= @IdentifyDupes
+		) >= @IdentifyDupes) AND
+		(@Status = '%' OR IsNull(KP.Status, '') like @Status) AND
+		(@Camera = '%' OR IsNull(PH.camera, '') like @Camera)
 	Order By
 		PH.epoch_time_end Desc
 END
 GO
+
 
