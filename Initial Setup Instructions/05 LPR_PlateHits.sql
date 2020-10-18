@@ -17,7 +17,7 @@ CREATE TABLE [dbo].[LPR_PlateHits](
 	[best_plate] [nvarchar](50) NOT NULL,
 	[best_uuid] [nvarchar](100) NOT NULL,
 	[camera] [nvarchar](50) NOT NULL,
-	[camera_id] [smallint] NOT NULL,
+	[camera_id] [int] NOT NULL,
 	[company] [int] NOT NULL,
 	[crop_location] [tinyint] NOT NULL,
 	[direction_of_travel_degrees] [smallint] NOT NULL,
