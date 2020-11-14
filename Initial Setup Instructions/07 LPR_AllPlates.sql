@@ -1,7 +1,7 @@
-USE [LPR]
+﻿USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_AllPlates]    Script Date: 10/18/2020 1:26:36 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_AllPlates]    Script Date: 11/14/2020 12:44:10 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -23,7 +23,8 @@ CREATE PROCEDURE [dbo].[sp_LPR_AllPlates]
 	@IdentifyDupes int = 0,
 	@TopPH int = 999,
 	@Status nvarchar(100) = '%',
-	@Camera nvarchar(50) = '%'
+	@Camera nvarchar(50) = '%',
+	@SearchBy nvarchar(50) = 'Plate'
 
 AS
 BEGIN
@@ -35,6 +36,17 @@ BEGIN
 	Select Top (@TopPH)
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) as [Local Time],
 		PH.best_plate as [Plate],
+		Case
+			When PH.direction_of_travel_degrees <= 22.5 Then N'⬆'
+			When PH.direction_of_travel_degrees <= 67.5 Then N'⬈'
+			When PH.direction_of_travel_degrees <= 112.5 Then N'→'
+			When PH.direction_of_travel_degrees <= 157.5 Then N'⬊'
+			When PH.direction_of_travel_degrees <= 202.5 Then N'⬇'
+			When PH.direction_of_travel_degrees <= 247.5 Then N'⬋'
+			When PH.direction_of_travel_degrees <= 292.5 Then N'←'
+			When PH.direction_of_travel_degrees <= 337.5 Then N'⬉'
+			Else N'⬆'
+		End as [D],
 		KP.Description,
 		PH.region as [Region],
 		PH.vehicle_color as [Color],
@@ -97,7 +109,6 @@ BEGIN
 	Where
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) >= @StartDate AND
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) <= @EndDate AND
-		PH.best_plate like @Plate AND
 		IsNull(KP.Status, '') <> Case When @HideNeighbors = 0 then 'NeverHide' When @HideNeighbors = 1 then 'Neighbor' end AND
 		PHTH.reason is NULL AND
 		(@IdentifyDupes = 0 OR
@@ -113,7 +124,16 @@ BEGIN
 				PHTHDup.reason is NULL
 		) >= @IdentifyDupes) AND
 		(@Status = '%' OR IsNull(KP.Status, '') like @Status) AND
-		(@Camera = '%' OR IsNull(PH.camera, '') like @Camera)
+		(@Camera = '%' OR IsNull(PH.camera, '') like @Camera) AND
+		(@Plate = '%' OR 
+			Case
+				When @SearchBy = 'Plate' then PH.best_plate
+				When @SearchBy = 'Description' then KP.Description
+				When @SearchBy = 'Make' then LPRAC.make
+				When @SearchBy = 'Model' then LPRAC.model
+				Else PH.best_plate
+			End like @Plate
+		)
 	Order By
 		PH.epoch_time_end Desc
 END

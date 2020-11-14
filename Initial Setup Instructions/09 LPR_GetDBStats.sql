@@ -1,7 +1,7 @@
 USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_GetDBStats]    Script Date: 10/18/2020 1:27:09 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_GetDBStats]    Script Date: 11/14/2020 12:44:55 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -24,7 +24,8 @@ CREATE PROCEDURE [dbo].[sp_LPR_GetDBStats]
 	@IdentifyDupes int = 0,
 	@TopPH int = 999,
 	@Status nvarchar(100) = '%',
-	@Camera nvarchar(50) = '%'
+	@Camera nvarchar(50) = '%',
+	@SearchBy nvarchar(50) = 'Plate'
 
 AS
 BEGIN
@@ -49,10 +50,10 @@ BEGIN
 	From LPR_PlateHits as PH
 	Left Join LPR_KnownPlates as KP on KP.Plate = PH.best_plate
 	Left Join LPR_PlateHits_ToHide as PHTH on PHTH.pk = PH.pk
+	Left Join LPR_AutoCheck as LPRAC on LPRAC.Plate = PH.best_plate
 	Where
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) >= @StartDate AND
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) <= @EndDate AND
-		PH.best_plate like @Plate AND
 		IsNull(KP.Status, '') <> Case When @HideNeighbors = 0 then 'NeverHide' When @HideNeighbors = 1 then 'Neighbor' end AND
 		PHTH.reason is NULL AND
 		(@IdentifyDupes = 0 OR
@@ -68,7 +69,16 @@ BEGIN
 				PHTHDup.reason is NULL
 		) >= @IdentifyDupes) AND
 		(@Status = '%' OR IsNull(KP.Status, '') like @Status) AND
-		(@Camera = '%' OR IsNull(PH.camera, '') like @Camera)
+		(@Camera = '%' OR IsNull(PH.camera, '') like @Camera) AND
+		(@Plate = '%' OR 
+			Case
+				When @SearchBy = 'Plate' then PH.best_plate
+				When @SearchBy = 'Description' then KP.Description
+				When @SearchBy = 'Make' then LPRAC.make
+				When @SearchBy = 'Model' then LPRAC.model
+				Else PH.best_plate
+			End like @Plate
+		)
 END
 GO
 
