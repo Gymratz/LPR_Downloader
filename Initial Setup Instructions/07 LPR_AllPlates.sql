@@ -1,7 +1,7 @@
 ﻿USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_AllPlates]    Script Date: 11/14/2020 12:44:10 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_AllPlates]    Script Date: 12/27/2020 7:02:24 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -104,13 +104,10 @@ BEGIN
 		LPRAC.model as [Car Model]
 	From LPR_PlateHits as PH
 	Left Join LPR_KnownPlates as KP on KP.Plate = PH.best_plate
-	Left Join LPR_PlateHits_ToHide as PHTH on PHTH.pk = PH.pk
 	Left Join LPR_AutoCheck as LPRAC on LPRAC.Plate = PH.best_plate
 	Where
-		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) >= @StartDate AND
-		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) <= @EndDate AND
-		IsNull(KP.Status, '') <> Case When @HideNeighbors = 0 then 'NeverHide' When @HideNeighbors = 1 then 'Neighbor' end AND
-		PHTH.reason is NULL AND
+		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) between @StartDate and @EndDate AND
+		(@HideNeighbors = 0 OR IsNull(KP.Status, '') <> 'Neighbor') AND
 		(@IdentifyDupes = 0 OR
 		(
 			Select
@@ -133,7 +130,8 @@ BEGIN
 				When @SearchBy = 'Model' then LPRAC.model
 				Else PH.best_plate
 			End like @Plate
-		)
+		) AND
+		(@Plate <> '%' OR PH.pk not in (Select PHTH.pk from LPR_PlateHits_ToHide as PHTH))
 	Order By
 		PH.epoch_time_end Desc
 END
