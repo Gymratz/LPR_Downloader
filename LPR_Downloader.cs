@@ -12,6 +12,8 @@ using System.Net.Mail;
 using System.Threading;
 using System.Configuration;
 using System.Globalization;
+using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace LPR_Downloader
 {
@@ -218,6 +220,11 @@ namespace LPR_Downloader
             string str_EndMinutes = DateTime.Now.AddMinutes(1).ToString("mm");
 
             string str_UTC_Offset = DateTime.Now.ToString("zz");
+            if (!str_UTC_Offset.Contains("-") & str_UTC_Offset != "0" & str_UTC_Offset != "+0")
+            {
+                str_UTC_Offset = "%2b" + str_UTC_Offset;
+            }
+
 
             string _url = "https://cloud.openalpr.com/api/search/group?topn=20000&start=" + str_StartDate + "T" + str_StartHours + "%3A" + str_StartMinutes + "%3A00" + str_UTC_Offset + "%3A00&end=" + str_EndDate + "T" + str_EndHours + "%3A" + str_EndMinutes + "%3A59" + str_UTC_Offset + "%3A00&order=desc&format=csv";
 
@@ -228,8 +235,9 @@ namespace LPR_Downloader
                     UploadStream(streamCSV);
                 }
             }
-            catch // Currently the only time I've had a failure is if logged out.
+            catch (Exception e) // Currently the only time I've had a failure is if logged out.
             {
+                write_event(e.Message.ToString(), EventLogEntryType.Error);
                 await LoginALPR(); // Logs in again, file should import next timer tick.
             }
         }
@@ -318,10 +326,18 @@ namespace LPR_Downloader
                     }).Start();
 
                     // If Archive Folder, Archive.  (Only archives CSVs with new information)
-                    if (Constants.csvArchiveLocation != "")
+                    try
                     {
-                        File.WriteAllBytes(Constants.csvArchiveLocation + DateTime.Now.ToString("yyyy.MM.dd_hhmmss") + ".csv", streamCSV.ToArray());
+                        if (Constants.csvArchiveLocation != "")
+                        {
+                            File.WriteAllBytes(Constants.csvArchiveLocation + DateTime.Now.ToString("yyyy.MM.dd_hhmmss") + ".csv", streamCSV.ToArray());
+                        }
                     }
+                    catch (Exception e)
+                    {
+                        write_event(e.Message.ToString(), EventLogEntryType.Error);
+                    }
+                   
 
                     // Run a command to clean up the DB.
                     CleanUpDB();
@@ -358,59 +374,67 @@ namespace LPR_Downloader
 
         private void GenerateAlerts(DataTable dt_NewEntries) // Takes the data just uploaded and checks to see if an e-mail alert is needed.
         {
-            //For each Row...
-            foreach (DataRow row1 in dt_NewEntries.Rows)
+            try
             {
-                String searchPlate = row1["best_plate"].ToString();
-                String imagePlate = row1["best_uuid"].ToString();
-                String alertAddress = "";
-                String Description = "";
-                String Status = "";
-                String Year = "";
-                String Make = "";
-                String Model = "";
-
-                using (sql_Connection = new SqlConnection(Constants.str_SqlCon))
+                //For each Row...
+                foreach (DataRow row1 in dt_NewEntries.Rows)
                 {
-                    using (sql_Command = new SqlCommand("Exec sp_LPR_PlateAlerts @Plate", sql_Connection))
-                    {
-                        sql_Command.Parameters.AddWithValue("@Plate", searchPlate);
-                        sql_Connection.Open();
+                    String searchPlate = row1["best_plate"].ToString();
+                    String imagePlate = row1["best_uuid"].ToString();
+                    String alertAddress = "";
+                    String Description = "";
+                    String Status = "";
+                    String Year = "";
+                    String Make = "";
+                    String Model = "";
 
-                        using (SqlDataReader db_reader = sql_Command.ExecuteReader())
+                    using (sql_Connection = new SqlConnection(Constants.str_SqlCon))
+                    {
+                        using (sql_Command = new SqlCommand("Exec sp_LPR_PlateAlerts @Plate", sql_Connection))
                         {
-                            while (db_reader.Read())
+                            sql_Command.Parameters.AddWithValue("@Plate", searchPlate);
+                            sql_Connection.Open();
+
+                            using (SqlDataReader db_reader = sql_Command.ExecuteReader())
                             {
-                                alertAddress = db_reader[0].ToString();
-                                Description = db_reader[1].ToString();
-                                Status = db_reader[2].ToString();
-                                Year = db_reader[3].ToString();
-                                Make = db_reader[4].ToString();
-                                Model = db_reader[5].ToString();
+                                while (db_reader.Read())
+                                {
+                                    alertAddress = db_reader[0].ToString();
+                                    Description = db_reader[1].ToString();
+                                    Status = db_reader[2].ToString();
+                                    Year = db_reader[3].ToString();
+                                    Make = db_reader[4].ToString();
+                                    Model = db_reader[5].ToString();
+                                }
                             }
+                            sql_Connection.Close();
+                        }
+                    }
+
+                    if (alertAddress != "")
+                    {
+                        if (Constants.pushToken != "" && Constants.pushUser != "")
+                        {
+                            Alert_Push("Watched Plate", "You may be interested in this plate that just went by the house...");
+                        }
+
+                        if (Constants.emailSignIn != "")
+                        {
+                            Image img_Full;
+                            //Gets Image and saves the full image
+                            WebClient wc = new WebClient();
+                            byte[] bytes = wc.DownloadData(Constants.str_WebServer + "/img/" + imagePlate + ".jpg");
+                            System.IO.MemoryStream ms = new System.IO.MemoryStream(bytes);
+                            img_Full = Image.FromStream(ms);
+                            Alert_Email(img_Full, alertAddress, searchPlate, Description, Status, Year, Make, Model);
                         }
                     }
                 }
-
-                if (alertAddress != "")
-                {
-                    if (Constants.pushToken != "" && Constants.pushUser != "")
-                    {
-                        Alert_Push("Watched Plate", "You may be interested in this plate that just went by the house...");
-                    }
-
-                    if (Constants.emailSignIn != "")
-                    {
-                        Image img_Full;
-                        //Gets Image and saves the full image
-                        WebClient wc = new WebClient();
-                        byte[] bytes = wc.DownloadData(Constants.str_WebServer +"/img/" + imagePlate + ".jpg");
-                        System.IO.MemoryStream ms = new System.IO.MemoryStream(bytes);
-                        img_Full = Image.FromStream(ms);
-                        Alert_Email(img_Full, alertAddress, searchPlate, Description, Status, Year, Make, Model);
-                    }
-                }
             }
+            catch (Exception e)
+            {
+                write_event(e.Message.ToString(), EventLogEntryType.Error);
+            }     
         }
 
         private void Alert_Email(Image img_ToEmail, string str_EmailToAddress, string str_Plate, string D, String S, String Y, String Ma, String Mo)
@@ -665,6 +689,18 @@ namespace LPR_Downloader
             {
                 MessageBox.Show(e2.Message.ToString(), "Test Failed");
             }
+        }
+
+        private void write_event(string myMessage, EventLogEntryType myType)
+        {
+            try
+            {
+                string source = ".NET Runtime";
+                EventLog systemEventLog = new EventLog("Application");
+                systemEventLog.Source = source;
+                systemEventLog.WriteEntry(myMessage, myType, 1001);
+            }
+            catch { }    
         }
     }
 }
