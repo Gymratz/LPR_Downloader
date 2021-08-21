@@ -266,7 +266,7 @@ namespace LPR_Downloader
             try
             {
                 var wc = new System.Net.WebClient();
-                var stream_reader = new StreamReader(wc.OpenRead("http://127.0.0.1:8355/"));
+                var stream_reader = new StreamReader(wc.OpenRead(Constants.str_WebServer));
                 String Str = stream_reader.ReadToEnd();
                 stream_reader.Close();
 
