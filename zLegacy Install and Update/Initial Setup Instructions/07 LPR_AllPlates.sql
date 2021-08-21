@@ -1,12 +1,13 @@
 ﻿USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_AllPlates]    Script Date: 12/27/2020 7:02:24 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_AllPlates]    Script Date: 7/31/2021 10:34:22 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
 
 -- =============================================
 -- Author:		<Author,,Name>
@@ -24,7 +25,11 @@ CREATE PROCEDURE [dbo].[sp_LPR_AllPlates]
 	@TopPH int = 999,
 	@Status nvarchar(100) = '%',
 	@Camera nvarchar(50) = '%',
-	@SearchBy nvarchar(50) = 'Plate'
+	@Desc nvarchar(50) = '%',
+	@Make nvarchar(50) = '%',
+	@Model nvarchar(50) = '%',
+	@Color nvarchar(50) = '%',
+	@VIN nvarchar(50) = '%'
 
 AS
 BEGIN
@@ -100,11 +105,15 @@ BEGIN
 		KP.Alert_Address,
 		LPRAC.vin as [VIN],
 		LPRAC.year as [Yr],
+		LPRAC.Color as [Car Color],
 		LPRAC.make as [Car Make],
-		LPRAC.model as [Car Model]
+		LPRAC.model as [Car Model],
+		LocalInfo.best_color as [ALPR Color],
+		LocalInfo.best_model as [ALPR Model]
 	From LPR_PlateHits as PH
 	Left Join LPR_KnownPlates as KP on KP.Plate = PH.best_plate
 	Left Join LPR_AutoCheck as LPRAC on LPRAC.Plate = PH.best_plate
+	Left Join LPR_LocalInfo as LocalInfo on LocalInfo.UUID = PH.best_uuid
 	Where
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) between @StartDate and @EndDate AND
 		(@HideNeighbors = 0 OR IsNull(KP.Status, '') <> 'Neighbor') AND
@@ -122,15 +131,12 @@ BEGIN
 		) >= @IdentifyDupes) AND
 		(@Status = '%' OR IsNull(KP.Status, '') like @Status) AND
 		(@Camera = '%' OR IsNull(PH.camera, '') like @Camera) AND
-		(@Plate = '%' OR 
-			Case
-				When @SearchBy = 'Plate' then PH.best_plate
-				When @SearchBy = 'Description' then KP.Description
-				When @SearchBy = 'Make' then LPRAC.make
-				When @SearchBy = 'Model' then LPRAC.model
-				Else PH.best_plate
-			End like @Plate
-		) AND
+		(@Plate = '%' OR PH.best_plate like @Plate) AND
+		(@Desc = '%' OR KP.Description like @Desc) AND
+		(@Color = '%' OR LPRAC.Color like @Color OR LocalInfo.best_color like @Color) AND
+		(@Make = '%' OR LPRAC.Make like @Make OR LocalInfo.best_make like @Make) AND
+		(@Model = '%' OR LPRAC.model like @Model OR LocalInfo.best_model like @Model) AND
+		(@VIN = '%' OR LPRAC.vin like @VIN) AND
 		(@Plate <> '%' OR PH.pk not in (Select PHTH.pk from LPR_PlateHits_ToHide as PHTH))
 	Order By
 		PH.epoch_time_end Desc

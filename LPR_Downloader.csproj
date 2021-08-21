@@ -23,7 +23,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>8</ApplicationRevision>
+    <ApplicationRevision>11</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -64,9 +64,37 @@
     <ApplicationIcon>Icon Files\SyconsciousAu-Downloader.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=5.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Encodings.Web.5.0.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=5.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Json.5.0.2\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -101,6 +129,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="LPR_Downloader_TemporaryKey.pfx" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -127,28 +156,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="0 - Install and Update\LPR_Logo.jpg" />
+    <Content Include="0 - Install and Update\Setup Instructions.txt" />
+    <Content Include="0 - Install and Update\SQL Full Install or Update.sql" />
     <Content Include="Icon Files\SyconsciousAu-Downloader.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Initial Setup Instructions\01 LPR_AutoHidePlates.sql" />
-    <Content Include="Initial Setup Instructions\01a LPR_AutoCheck.sql" />
-    <Content Include="Initial Setup Instructions\02 LPR_ImportHistory.sql" />
-    <Content Include="Initial Setup Instructions\03 LPR_KnownPlates.sql" />
-    <Content Include="Initial Setup Instructions\04 LPR_PlateCorrections.sql" />
-    <Content Include="Initial Setup Instructions\05 LPR_PlateHits.sql" />
-    <Content Include="Initial Setup Instructions\06 LPR_PlateHits_ToHide.sql" />
-    <Content Include="Initial Setup Instructions\07 LPR_AllPlates.sql" />
-    <Content Include="Initial Setup Instructions\08 LPR_FixPlates.sql" />
-    <Content Include="Initial Setup Instructions\09 LPR_GetDBStats.sql" />
-    <Content Include="Initial Setup Instructions\10 LPR_PlateAlerts.sql" />
-    <Content Include="Initial Setup Instructions\11 LPR_PlateChart.sql" />
-    <Content Include="Initial Setup Instructions\12 LPR_PlatePie.sql" />
-    <Content Include="Initial Setup Instructions\13 LPR_PlateSummary.sql" />
-    <Content Include="Initial Setup Instructions\14 LPR_SpecificPlate.sql" />
-    <Content Include="Initial Setup Instructions\LPR_Logo.jpg" />
-    <Content Include="Initial Setup Instructions\Setup Instructions.txt" />
-    <Content Include="Update Only Instructions\2020.10.18 LPR_PlateAlerts.sql" />
-    <Content Include="Update Only Instructions\Read Me.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

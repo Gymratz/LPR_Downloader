@@ -1,0 +1,12 @@
+﻿New Install Only Portion
+I would highly suggest installing SQL Server Express, and separately SQL Server Management Studio to manage it.
+Create database named "LPR."  
+----------------------------------
+
+Continue for New, start here for Update
+Run file SQL Full Install or Update.sql in SQL Server Management Studio.
+
+Compile, install, run LPR_Downloader app.
+Fill out Configuration page.
+
+Place LPR_Logo.jpg in c:\temp (or other, just update in configuration when you get there)

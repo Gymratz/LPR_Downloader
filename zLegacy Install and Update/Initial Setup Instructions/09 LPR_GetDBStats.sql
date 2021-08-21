@@ -1,12 +1,13 @@
 USE [LPR]
 GO
 
-/****** Object:  StoredProcedure [dbo].[sp_LPR_GetDBStats]    Script Date: 11/14/2020 12:44:55 PM ******/
+/****** Object:  StoredProcedure [dbo].[sp_LPR_GetDBStats]    Script Date: 7/31/2021 10:33:52 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
 
 
 -- =============================================
@@ -25,7 +26,11 @@ CREATE PROCEDURE [dbo].[sp_LPR_GetDBStats]
 	@TopPH int = 999,
 	@Status nvarchar(100) = '%',
 	@Camera nvarchar(50) = '%',
-	@SearchBy nvarchar(50) = 'Plate'
+	@Desc nvarchar(50) = '%',
+	@Make nvarchar(50) = '%',
+	@Model nvarchar(50) = '%',
+	@Color nvarchar(50) = '%',
+	@VIN nvarchar(50) = '%'
 
 AS
 BEGIN
@@ -49,13 +54,12 @@ BEGIN
 		) as [All_Distinct]
 	From LPR_PlateHits as PH
 	Left Join LPR_KnownPlates as KP on KP.Plate = PH.best_plate
-	Left Join LPR_PlateHits_ToHide as PHTH on PHTH.pk = PH.pk
 	Left Join LPR_AutoCheck as LPRAC on LPRAC.Plate = PH.best_plate
+	Left Join LPR_LocalInfo as LocalInfo on LocalInfo.UUID = PH.best_uuid
 	Where
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) >= @StartDate AND
 		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) <= @EndDate AND
 		IsNull(KP.Status, '') <> Case When @HideNeighbors = 0 then 'NeverHide' When @HideNeighbors = 1 then 'Neighbor' end AND
-		PHTH.reason is NULL AND
 		(@IdentifyDupes = 0 OR
 		(
 			Select
@@ -70,15 +74,13 @@ BEGIN
 		) >= @IdentifyDupes) AND
 		(@Status = '%' OR IsNull(KP.Status, '') like @Status) AND
 		(@Camera = '%' OR IsNull(PH.camera, '') like @Camera) AND
-		(@Plate = '%' OR 
-			Case
-				When @SearchBy = 'Plate' then PH.best_plate
-				When @SearchBy = 'Description' then KP.Description
-				When @SearchBy = 'Make' then LPRAC.make
-				When @SearchBy = 'Model' then LPRAC.model
-				Else PH.best_plate
-			End like @Plate
-		)
+		(@Plate = '%' OR PH.best_plate like @Plate) AND
+		(@Desc = '%' OR KP.Description like @Desc) AND
+		(@Color = '%' OR LPRAC.Color like @Color OR LocalInfo.best_color like @Color) AND
+		(@Make = '%' OR LPRAC.Make like @Make OR LocalInfo.best_make like @Make) AND
+		(@Model = '%' OR LPRAC.model like @Model OR LocalInfo.best_model like @Model) AND
+		(@VIN = '%' OR LPRAC.vin like @VIN) AND
+		(@Plate <> '%' OR PH.pk not in (Select PHTH.pk from LPR_PlateHits_ToHide as PHTH))
 END
 GO
 

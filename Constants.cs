@@ -19,6 +19,9 @@ namespace LPR_Downloader
         public static string pushToken;
         public static string pushUser;
         public static string StartOnLoad;
+        public static string StartOnLoad_Local;
         public static string TimerMinutes;
+        public static string TimerMS;
+        public static string Image_Backup_Location;
     }
 }
