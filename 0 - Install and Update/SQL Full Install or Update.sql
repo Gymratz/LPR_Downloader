@@ -947,7 +947,7 @@ BEGIN
 	Where
 		PH.best_plate like @Plate
 	Order By
-		PH.epoch_time_end Desc
+		Cast(switchoffset(Cast(PH.epoch_time_end as datetimeoffset), @CurrentOffset) as datetime) Desc
 END
 GO
 
